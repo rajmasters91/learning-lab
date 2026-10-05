@@ -17,7 +17,7 @@ Note:
 NVIDIA supports two methods for achieving state persistence:
 
 	1.	Legacy Kernel Persistence: 
-      Managed via nvidia-smi -pm 1. This instructs the kernel-space driver to stay awake. The Persistence-M column in nvidia-smi monitors this legacy kernel state.
+      Managed via nvidia-smi -pm 1. This instructs the kernel-space driver to stay awake. The Persistence-M column in nvidia-smi will show "On" when enabled.
 
 	2.	User-Space Daemon (nvidia-persistenced): 
       It holds the GPU character device files open. By maintaining an open file descriptor, it prevents the Linux kernel from unloading the driver state.
@@ -76,12 +76,12 @@ root@dg05:~# sudo systemctl restart nvidia-persistenced
 
 Note:    
 -i,   --id=                 Target a specific GPU or Unit.    
--lgc  --lock-gpu-clocks=    Specifies <minGpuClock,maxGpuClock> clocks as a pair (e.g. 1500,1500) => range of desired locked GPU clock speed in MHz.
+-lgc  --lock-gpu-clocks=    Specifies <minGpuClock,maxGpuClock> clocks as a pair (e.g. 1410,1410) => range of desired locked GPU clock speed in MHz.
 
 ## Reference
 
 GPU Clock locking:
-GPU's core clock (the SM clock) isn't fixed. It increases with workload and drops when the GPU reaches its power limit or gets hot. => same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, and your numbers move with it.
+GPU's core clock (the SM clock) isn't fixed. It increases with workload and drops when the GPU reaches its power limit or gets hot. => same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, this affects benchmark numbers.
 
 $ nvidia-smi -i 2 -q -d SUPPORTED_CLOCKS        ### lists the allowed values. For A100, SM clocks range from 210 MHz to 1410 MHz. 
 
@@ -92,3 +92,20 @@ Note: 1512 MHz memory clock on the A100 is fixed and cant be locked.
 Tradeoff: For A100, 1410 MHz is maximum. GPU under high load can reach 300W and hence drops GPU clock below 1410 MHz even when locked. A lower value (say 1200) holds steady but at reduced speed.
 
 How to decide: start with 1410. During your first benchmark, watch nvidia-smi -i 2 -q -d CLOCK,PERFORMANCE and look at the actual SM clock and the throttle reasons. If it holds 1410, keep it. If it dips, lower the lock until it stays put.
+
+root@dg05:~# nvidia-smi -i 2 -q -d SUPPORTED_CLOCKS
+
+==============NVSMI LOG==============
+
+Timestamp                                              : Mon Oct  5 19:12:09 2026
+Driver Version                                         : 595.91.07
+CUDA Version                                           : 13.2
+
+Attached GPUs                                          : 4
+GPU 00000000:81:00.0
+    Supported Clocks
+        Memory                                         : 1512 MHz
+            Graphics                                   : 1410 MHz
+            Graphics                                   : 1395 MHz
+            Graphics                                   : 1380 MHz
+            Graphics                                   : 1365 MHz
