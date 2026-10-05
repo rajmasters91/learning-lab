@@ -32,6 +32,8 @@ NVIDIA supports two methods for achieving state persistence:
       
       root@dg05:~# sudo systemctl daemon-reload ; sudo systemctl restart nvidia-persistenced
 
+      Note: Do not edit /usr/lib/systemd/system/nvidia-persistenced.service directly. package update will overwrite it.
+
 	   Validation: 
       1. $ nvidia-smi => "Persistence-M: On" for all GPUs.
       2. lsof /dev/nvidia* => must list the open GPU character device files (/dev/nvidiactl, /dev/nvidia0, /dev/nvidia1)
@@ -42,7 +44,9 @@ NVIDIA supports two methods for achieving state persistence:
                nvidia-pe 56684 nvidia-persistenced    3u   CHR   195,0      0t0 1001 /dev/nvidia0
                nvidia-pe 56684 nvidia-persistenced    5u   CHR   195,0      0t0 1001 /dev/nvidia0
 
- Tuning Power and GPU Clocks: Need to create a separate systemd service to make these persistent.
+
+
+Tuning Power and GPU Clocks: Need to create a separate systemd service to make these persistent.
  
 Ex: To set max power and clocks refer ExecStart in below systemd config file. This persists across reboots.
 
