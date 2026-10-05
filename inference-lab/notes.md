@@ -1,12 +1,14 @@
 ## Concepts: 
 
-
+Xid 79: "GPU has fallen off the bus" => NVIDIA driver has lost communication with the GPU over the PCIe (Peripheral Component Interconnect Express) bus. OS cannot detect or interact with GPU.
+Check: dmesg -T | grep -i xid
+Causes: Physical connections (reseat GPU, check power cables), H/w failure, overheating (ex: in dg05, GPU0's power was capped @ 200W to avoid xid79 due to overheating) 
 
 
 
 
 Issue: 
-### nvidia-smi is showing Persistence-M as OFF because the nvidia-persistenced service is running with "--no-persistence-mode"
+### nvidia-smi is showing Persistence-M as OFF because the nvidia-persistenced service has "--no-persistence-mode" in ExecStart.
 Fix: nvidia-smi -pm 1
 
 
