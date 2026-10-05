@@ -77,10 +77,14 @@ Note:
 ## Reference
 
 GPU Clock locking:
-GPU's core clock (the SM clock) isn't fixed. It increases when there's headroom and drops when the card hits its power limit or gets hot. So the same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, and your numbers move with it.
+GPU's core clock (the SM clock) isn't fixed. It increases with workload and drops when the GPU reaches its power limit or gets hot. => same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, and your numbers move with it.
 
-"$ nvidia-smi -i 2 -q -d SUPPORTED_CLOCKS" lists the allowed values. You'll see one memory clock (1512 MHz, which on the A100 is fixed, so you can't lock it) and a list of SM clocks from about 210 MHz up to 1410 MHz. Locking means telling the GPU to stay at one SM value: sudo nvidia-smi -i 2 -lgc 1410,1410.
+$ nvidia-smi -i 2 -q -d SUPPORTED_CLOCKS        ### lists the allowed values. For A100, SM clocks range from 210 MHz to 1410 MHz. 
 
-The choice: 1410 is the maximum. It gives the best performance, but under heavy load the card may hit its 300W cap and drop below it anyway, so you aren't really locked. A lower value (say 1200) holds steady but throws away speed.
+Locking => telling the GPU to stay at one SM value: sudo nvidia-smi -i 2 -lgc 1410,1410.
+
+Note: 1512 MHz memory clock on the A100 is fixed and cant be locked. 
+
+Tradeoff: For A100, 1410 MHz is maximum. GPU under high load can reach 300W and hence drops GPU clock below 1410 MHz even when locked. A lower value (say 1200) holds steady but at reduced speed.
 
 How to decide: start with 1410. During your first benchmark, watch nvidia-smi -i 2 -q -d CLOCK,PERFORMANCE and look at the actual SM clock and the throttle reasons. If it holds 1410, keep it. If it dips, lower the lock until it stays put.
