@@ -102,6 +102,11 @@ WantedBy=multi-user.target
 root@dg05:~#
 
 	
+Note:    
+-i,   --id=                 Target a specific GPU or Unit.    
+-lgc  --lock-gpu-clocks=    Specifies <minGpuClock,maxGpuClock> clocks as a pair (e.g. 1500,1500) that defines the range of desired locked GPU clock speed in MHz. Setting this will supersede application clocks and take effect regardless if an app is running.
+
+
 System Resource Implications
 ⚬	Memory Footprint: user-space nvidia-persistenced daemon = lightweight (consumes <2MB RAM) => better than keeping a dummy CUDA process alive.
 ⚬	Idle Power Consumption: While the driver remains loaded, the GPU will correctly drop into its lowest idle power state (e.g., P8 state) unless explicitly overridden by Prefer Maximum Performance settings. Persistence mode does not force the GPU to draw maximum power while idle.
@@ -161,3 +166,17 @@ Mon Oct  5 17:18:42 2026
 | N/A   31C    P0             42W /  300W |       0MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
+
+
+
+
+
+Clock locking:
+
+GPU's core clock (the SM clock) isn't fixed. It boosts up when there's headroom and drops when the card hits its power limit or gets hot. So the same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, and your numbers move with it.
+
+"$ nvidia-smi -i 2 -q -d SUPPORTED_CLOCKS" lists the allowed values. You'll see one memory clock (1512 MHz, which on the A100 is fixed, so you can't lock it) and a list of SM clocks from about 210 MHz up to 1410 MHz. Locking means telling the GPU to stay at one SM value: sudo nvidia-smi -i 2 -lgc 1410,1410.
+
+The choice: 1410 is the maximum. It gives the best performance, but under heavy load the card may hit its 300W cap and drop below it anyway, so you aren't really locked. A lower value (say 1200) holds steady but throws away speed.
+
+How to decide: start with 1410. During your first benchmark, watch nvidia-smi -i 2 -q -d CLOCK,PERFORMANCE and look at the actual SM clock and the throttle reasons. If it holds 1410, keep it. If it dips, lower the lock until it stays put.
