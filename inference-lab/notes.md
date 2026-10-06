@@ -1,5 +1,7 @@
 ## Concepts: 
 
+Session1:
+
 What has to happen to generate one token? The model weight has to be read from GPU memory, all of it, every time.
 How big is that something for an 8B model in BF16, and why? 16GB
 How fast does reading it from VRAM take at 1.94 TB/s? 8ms/token or ~120 token/second.
@@ -56,7 +58,6 @@ Thus more tokens are generated for the same amount of time in case of batch jobs
 
 
 
-
 Xid 79: "GPU has fallen off the bus" => NVIDIA driver has lost communication with the GPU over the PCIe (Peripheral Component Interconnect Express) bus. OS cannot detect or interact with GPU.
 Check: dmesg -T | grep -i xid
 Causes: Physical connections (reseat GPU, check power cables), H/w failure, overheating (ex: in dg05, GPU0's power was capped @ 200W to avoid xid79 due to overheating) 
@@ -102,6 +103,11 @@ NVIDIA supports two methods for achieving state persistence:
                nvidia-pe 56684 nvidia-persistenced    5u   CHR   195,0      0t0 1001 /dev/nvidia0
 
 
+Question:
+For gpuaas enabled nodes, nvidia-smi shows persistence-M as off. Why ?
+
+
+
 
 Tuning Power and GPU Clocks: Need to create a separate systemd service to make these persistent.
  
@@ -138,6 +144,43 @@ Note:
 
 
 
+
+
+Session2: 
+
+
+Card used: A100 80GB
+GPU Used: GPU2
+Model used:  Llama-3.1-8B-Instruct
+vllm image used: vllm/vllm-openai:nightly
+
+
+docker run --gpus '"device=2"' \
+  --ipc=host \
+  -p 8000:8000 \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -e HF_TOKEN=<redacted>>\
+  vllm/vllm-openai:nightly\
+  --model meta-llama/Llama-3.1-8B-Instruct
+
+
+Command Breakdown: 
+ --gpus '"device=2"' : assigns GPU with index 2 to the container.
+ --ipc=host : shares host's shared memory space with container. Protect vLLM from crashing (due to pytorch shared-memory limits) during inference.
+ -p 8000:8000: maps container port 8000 to host port 8000 to expose the webserver.
+ -v ~/.cache/huggingface:/root/.cache/huggingface : stores the model in this location in host so that container can reuse the already downloaded model weights and doesnt need to pull it from scratch.
+-e HF_TOKEN= : hugging face token passed as environment variable. mandatory for Llama 3.1, as it is a gated model i.e., requires licence acceptance from the model page.
+vllm/vllm-openai:nightly : pulls openai vLLM docker image with tag "nightly"
+--model meta-llama/Llama-3.1-8B-Instruct : passed as vLLM entrypoint. says which HF model repo to load.
+
+
+VLLM startup log: findings:
+
+The dtype line (confirms BF16): ```dtype=torch.bfloat16```
+How much memory the weights took, and how long loading took:  ```Model loading took 15.0 GiB memory and 22.071041 seconds```
+How much memory went to KV cache, and the number of tokens it can hold:  ```Available KV cache memory: 56.21 GiB``` and ```GPU KV cache size: 460,496 tokens```
+The max_model_len it chose: ```max model len 131072```
+The "maximum concurrency" line, if present: ```GPU KV cache size: 460,496 tokens, Maximum concurrency for 131,072 tokens per request: 3.51x``
 
 
 ## Reference
