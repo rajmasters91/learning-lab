@@ -78,3 +78,21 @@ Mon Oct  5 17:18:42 2026
 +-----------------------------------------+------------------------+----------------------+
 
 
+
+
+root@dg05:~# nvidia-smi -i 2 -q -d SUPPORTED_CLOCKS
+
+==============NVSMI LOG==============
+
+Timestamp                                              : Mon Oct  5 19:12:09 2026
+Driver Version                                         : 595.91.07
+CUDA Version                                           : 13.2
+
+Attached GPUs                                          : 4
+GPU 00000000:81:00.0
+    Supported Clocks
+        Memory                                         : 1512 MHz
+            Graphics                                   : 1410 MHz
+            Graphics                                   : 1395 MHz
+            Graphics                                   : 1380 MHz
+            Graphics                                   : 1365 MHz
