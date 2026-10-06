@@ -2,26 +2,25 @@
 
 What has to happen to generate one token? The model weight has to be read from GPU memory, all of it, every time.
 How big is that something for an 8B model in BF16, and why? 16GB
-How long does reading it take at 1.94 TB/s? 8ms/token or ~120 token/second.
+How fast does reading it from VRAM take at 1.94 TB/s? 8ms/token or ~120 token/second.
 Why doesn't compute matter here? Roughly how long does the maths take versus the memory read?
 
-
-What has to happen to generate one token? model weight has to read from memory
-How big is that something for an 8B model in BF16, and why? 16GB - 8B *2(BF16). not sure why 2 for BF16
-How long does reading it take at 1.94 TB/s? Show the division and the result in milliseconds and tokens per second. 16GB divided by 1.94TB/s = 8ms. Why 1.94 TB/s ?
-Why doesn't compute matter here? Roughly how long does the maths take versus the memory read? not sure
 
 bandwidth calculation:
 
 Ex: for meta-llama/Llama-3.1-8B-Instruct model, the bandwidth or token/second calculation is below: 
 1. 8B => 8 Billion parameters.
-Check config.json file in the hugging face page of the model to identify the Quantization used:   "torch_dtype": "bfloat16". Hence BF16 is used for this. Note: this is also found in vLLM startup log (dtype=torch.bfloat16).
-Quantizations can be BF16, F32, INT8, INT4,etc. The number mentioned is the bits. so BF16 has 16 bits => 2 bytes.
+Check config.json file in the hugging face page of the model to identify the model's precision/datatype (dtype) which is "torch_dtype": "bfloat16". Hence BF16 is used for this. Note: this is also found in vLLM startup log (dtype=torch.bfloat16).
+Precisions can be BF16, F32, INT8, INT4,etc. The number mentioned is the bits. so BF16 has 16 bits => 2 bytes.
 VRAM required to load the model on GPU = 8*2 = 16GB.
 
 A100 card reads at  1.94 TB/s. So, 16 GB divided by 1.94 TB/s or 16 GB / 1940 GB/s = 0.008 or 8ms. 
 To generate one token using this model, A100 card takes 8.2 millisecond.
 Hence, For 1 second (1/0.0082), ~120 tokens are produced.
+
+Note: Quantization => converting a model from higher precision (ex:F32 or BF16) to a lower precision (INT8, INT4). It increases decode speed but reduces accuracy.
+ex: 8B model requires 16GB VRAM when BF16 dtype is used (8x2) but same model in INT4 require only 4GB VRAM (8x0.5)
+
 
 
 Why 1.94 TB/s ? i.e., VRAM data transfer speed.
@@ -155,3 +154,23 @@ Note: 1512 MHz memory clock on the A100 is fixed and cant be locked.
 Tradeoff: For A100, 1410 MHz is maximum. GPU under high load can reach 300W and hence drops GPU clock below 1410 MHz even when locked. A lower value (say 1200) holds steady but at reduced speed.
 
 How to decide: start with 1410. During your first benchmark, watch nvidia-smi -i 2 -q -d CLOCK,PERFORMANCE and look at the actual SM clock and the throttle reasons. If it holds 1410, keep it. If it dips, lower the lock until it stays put.
+
+Command used:
+1. Diagnostics & Monitoring
+⚬	nvidia-smi — View current GPU state, Persistence-M status, and active clocks.
+⚬	sudo systemctl status nvidia-persistenced — Check if the persistence daemon is running and view its launch arguments.
+⚬	sudo journalctl -eu nvidia-persistenced — View the startup logs and error history for the daemon.
+⚬	sudo lsof /dev/nvid* — Verify if the daemon is actively holding the GPU character device files open.
+⚬	nvidia-smi -q -d SUPPORTED_CLOCKS — List the maximum hardware-supported memory and graphics clocks for your GPUs.
+2. Fixing the Persistence Daemon (Update-Resilient Drop-in)
+⚬	sudo mkdir -p /etc/systemd/system/nvidia-persistenced.service.d/ — Create the systemd drop-in directory.
+⚬	sudo bash -c 'echo -e "[Service]\nExecStart=\nExecStart=/usr/bin/nvidia-persistenced --user nvidia-persistenced --verbose" > /etc/systemd/system/nvidia-persistenced.service.d/override.conf' — Create the override file to strip the --no-persistence-mode flag.
+⚬	sudo systemctl daemon-reload — Tell systemd to re-read the configuration and detect the drop-in.
+⚬	sudo systemctl restart nvidia-persistenced — Restart the daemon to apply the persistent state.
+3. GPU Tuning & P0 Locking (Targeting Specific GPUs)
+⚬	sudo nvidia-smi -i 2 -pm 1 — Manually toggle legacy persistence mode on for GPU 2 (if bypassing the daemon).
+⚬	sudo nvidia-smi -i 2 -pl 250 — Set a strict 250W power limit for GPU 2.
+⚬	sudo nvidia-smi -i 2 -ac 1215,1410 — Lock application memory and graphics clocks to maximum frequencies for GPU 2.
+⚬	sudo nvidia-smi -i 2 -lgc 1410,1410 — Set a hard lock on the core GPU clock bounds to prevent thermal downclocking for GPU 2.
+4. Making Automation Scripts Executable
+⚬	sudo chmod +x /usr/local/bin/gpu-tune.sh — Grant execution permissions to your custom tuning bash script before hooking it into systemd.

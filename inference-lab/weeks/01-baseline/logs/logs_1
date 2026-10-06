@@ -59,8 +59,9 @@ Oct 05 17:18:15 dg05 nvidia-persistenced[56684]: device 0000:c1:00.0 - persisten
 Oct 05 17:18:15 dg05 nvidia-persistenced[56684]: device 0000:c1:00.0 - NUMA memory onlined.
 Oct 05 17:18:15 dg05 nvidia-persistenced[56684]: Local RPC services initialized
 Oct 05 17:18:15 dg05 systemd[1]: Started nvidia-persistenced.service - NVIDIA Persistence Daemon.
+
 root@dg05:~# nvidia-smi
-Mon Oct  5 17:18:42 2026
+Tue Oct  6 05:46:06 2026
 +-----------------------------------------------------------------------------------------+
 | NVIDIA-SMI 595.91.07              Driver Version: 595.91.07      CUDA Version: 13.2     |
 +-----------------------------------------+------------------------+----------------------+
@@ -69,14 +70,38 @@ Mon Oct  5 17:18:42 2026
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA A100 80GB PCIe          On  |   00000000:01:00.0 Off |                    0 |
-| N/A   34C    P0             45W /  200W |       0MiB /  81920MiB |      0%      Default |
+| N/A   41C    P0             47W /  200W |       0MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 |   1  NVIDIA A100 80GB PCIe          On  |   00000000:42:00.0 Off |                    0 |
-| N/A   31C    P0             42W /  300W |       0MiB /  81920MiB |      0%      Default |
+| N/A   37C    P0             44W /  300W |       0MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A100 80GB PCIe          On  |   00000000:81:00.0 Off |                    0 |
+| N/A   36C    P0             42W /  300W |       0MiB /  81920MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A100 80GB PCIe          On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   36C    P0             45W /  300W |       0MiB /  81920MiB |      0%      Default |
 |                                         |                        |             Disabled |
 +-----------------------------------------+------------------------+----------------------+
 
+
+root@dg05:~# nvidia-smi -i 2 -q -d CLOCK  # "i 2" specifies GPU index
+
+==============NVSMI LOG==============
+
+Timestamp                                              : Tue Oct  6 05:46:51 2026
+Driver Version                                         : 595.91.07
+CUDA Version                                           : 13.2
+
+Attached GPUs                                          : 4
+GPU 00000000:81:00.0
+    Clocks
+        Graphics                                       : 210 MHz
+        SM                                             : 210 MHz
+        Memory                                         : 1512 MHz
+        Video                                          : 795 MHz
 
 
 
@@ -96,3 +121,26 @@ GPU 00000000:81:00.0
             Graphics                                   : 1395 MHz
             Graphics                                   : 1380 MHz
             Graphics                                   : 1365 MHz
+
+
+
+
+
+root@dg05:~#  nvidia-smi -i 2 -lgc 1410,1410
+GPU clocks set to "(gpuClkMin 1410, gpuClkMax 1410)" for GPU 00000000:81:00.0
+All done.
+root@dg05:~# nvidia-smi -i 2 -q -d CLOCK
+
+==============NVSMI LOG==============
+
+Timestamp                                              : Tue Oct  6 05:47:51 2026
+Driver Version                                         : 595.91.07
+CUDA Version                                           : 13.2
+
+Attached GPUs                                          : 4
+GPU 00000000:81:00.0
+    Clocks
+        Graphics                                       : 1410 MHz
+        SM                                             : 1410 MHz
+        Memory                                         : 1512 MHz
+        Video                                          : 1275 MHz

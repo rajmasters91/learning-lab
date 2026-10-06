@@ -1,2 +1,0 @@
-Q. 
-The format the weights are stored in and the format the GPU computes in can differ. INT4 weights are usually unpacked to 16-bit for the maths. That's why INT4 shrinks memory and speeds up decode but doesn't necessarily speed up prefill.
