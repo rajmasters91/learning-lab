@@ -1,0 +1,12 @@
+# secrets
+.env
+*.token
+secrets/
+
+# large or regenerable
+huggingface/
+*.safetensors
+
+# editor noise
+.vscode/
+.DS_Store
