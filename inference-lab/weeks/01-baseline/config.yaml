@@ -3,7 +3,7 @@ docker run --gpus '"device=2"' \
   -p 8000:8000 \
   -v ~/.cache/huggingface:/root/.cache/huggingface \
   -e HF_TOKEN=<redacted>\
-  vllm/vllm-openai:nightly\
+  vllm/vllm-openai:v0.31.0-ubuntu2404\
   --model meta-llama/Llama-3.1-8B-Instruct
 
 

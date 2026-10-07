@@ -29,7 +29,7 @@ Why 1.94 TB/s ? i.e., VRAM data transfer speed.
 
 ```$ nvidia-smi -i 1 -q -d SUPPORTED_CLOCKS``` -->  Memory clock = 1512 MHz
 NVIDIA's pdf "A100 80GB PCIe datasheet" ->   'memory bus width' = 5120-bit and bf16_tflops=312.
-HBM class of memory used in GPU (like DDR RAM of server), moves data on both edges of each clock tick (double data rate), so 3,024 million transfers per second per pin. 
+HBM class of memory used in GPU (like DDR RAM of server), moves data on both edges of each clock tick (double data rate i.e., 1512*2 = 3,024 million transfers per second per pin). 
 
 Thus calculation is,
 1512 MHz
@@ -42,7 +42,7 @@ At 1.94 TB/s, the throughput of ~120 tokens/s is still "memory-bound" and NOT "c
 
 - To generate 1 token = 2 arithmetic operations per parameter (a multiply and an add). So:
 8 billion × 2 = 16 billion operations per token
-The A100 does ~312 trillion BF16 operations per second (bf16_tflops: 312)
+The A100 does ~312 trillion operations per second (bf16_tflops: 312)
 16 billion ÷ 312 trillion ≈ 0.05 ms
 
 compute takes 0.05 ms
@@ -160,7 +160,7 @@ docker run --gpus '"device=2"' \
   -p 8000:8000 \
   -v ~/.cache/huggingface:/root/.cache/huggingface \
   -e HF_TOKEN=<redacted>>\
-  vllm/vllm-openai:nightly\
+  vllm/vllm-openai:v0.31.0-ubuntu2404\
   --model meta-llama/Llama-3.1-8B-Instruct
 
 
@@ -170,17 +170,38 @@ Command Breakdown:
  -p 8000:8000: maps container port 8000 to host port 8000 to expose the webserver.
  -v ~/.cache/huggingface:/root/.cache/huggingface : stores the model in this location in host so that container can reuse the already downloaded model weights and doesnt need to pull it from scratch.
 -e HF_TOKEN= : hugging face token passed as environment variable. mandatory for Llama 3.1, as it is a gated model i.e., requires licence acceptance from the model page.
-vllm/vllm-openai:nightly : pulls openai vLLM docker image with tag "nightly"
+vllm/vllm-openai:nightly : pulls openai vLLM docker image with tag "v0.31.0-ubuntu2404"
 --model meta-llama/Llama-3.1-8B-Instruct : passed as vLLM entrypoint. says which HF model repo to load.
 
 
 VLLM startup log: findings:
 
 The dtype line (confirms BF16): ```dtype=torch.bfloat16```
-How much memory the weights took, and how long loading took:  ```Model loading took 15.0 GiB memory and 22.071041 seconds```
+How much memory the weights took, and how long loading took:  
+```Model loading took 15.0 GiB memory and 5.420225 seconds```
+```Loading weights took 0.87 seconds```
 How much memory went to KV cache, and the number of tokens it can hold:  ```Available KV cache memory: 56.21 GiB``` and ```GPU KV cache size: 460,496 tokens```
 The max_model_len it chose: ```max model len 131072```
 The "maximum concurrency" line, if present: ```GPU KV cache size: 460,496 tokens, Maximum concurrency for 131,072 tokens per request: 3.51x``
+
+
+
+
+Actual logs:
+
+(EngineCore pid=326) INFO 10-06 17:00:10 [default_loader.py:484] Loading weights took 0.87 seconds
+(EngineCore pid=326) INFO 10-06 17:00:11 [model_runner.py:407] Model loading took 15.0 GiB memory and 5.420225 seconds
+
+(EngineCore pid=326) INFO 10-06 17:00:33 [kv_cache_utils.py:2464] GPU KV cache size: 460,496 tokens, Maximum concurrency for 131,072 tokens per request: 3.51x
+
+(EngineCore pid=326) INFO 10-06 17:00:41 [gpu_worker.py:955] Free memory on device (78.84/79.25 GiB) on startup. Desired GPU memory utilization is (0.92, 72.91 GiB). Actual usage is 15.26 GiB for consumed memory (weights + non-torch), 1.44 GiB for peak activation, and 0.23 GiB for CUDAGraph memory.
+
+
+
+
+0.92 = 
+
+
 
 
 ## Reference
