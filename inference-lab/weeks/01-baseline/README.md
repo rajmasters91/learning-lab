@@ -93,3 +93,17 @@ Total tokens / max model len =   460,496 ÷ 131,072 = 3.51
 
 In worst case scenarion, Only 3–4 requests fit if each uses the full context. 
 But, 1,000-token chat request would allow about 460 concurrent requests (460,496/1000) on the same cache. 
+
+Note:
+A100 card’s total VRAM as per nvidia-smi= 81,920 MiB ÷ 1024 = 80.0 GiB
+vLLM log’s “79.25 GiB total” reports what CUDA can see after the driver reserves its share.
+
+GB (decimal, 10⁹ bytes): datasheets and “16 GB for 8B params”
+GiB (binary, 1024³ bytes): vLLM logs
+MiB (1024² bytes): nvidia-smi
+
+
+
+
+
+
