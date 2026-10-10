@@ -105,9 +105,7 @@ NVIDIA supports two methods for achieving state persistence:
 
 Question:
 For gpuaas enabled nodes, nvidia-smi shows persistence-M as off. Why ?
-
-
-
+because the nvidia-persistenced service runs with "--no-persistence-mode"
 
 Tuning Power and GPU Clocks: Need to create a separate systemd service to make these persistent.
  
@@ -152,14 +150,14 @@ Session2:
 Card used: A100 80GB
 GPU Used: GPU2
 Model used:  Llama-3.1-8B-Instruct
-vllm image used: vllm/vllm-openai:nightly
+vllm image used: vllm/vllm-openai:v0.31.0-ubuntu2404
 
 
 docker run --gpus '"device=2"' \
   --ipc=host \
   -p 8000:8000 \
   -v ~/.cache/huggingface:/root/.cache/huggingface \
-  -e HF_TOKEN=<redacted>>\
+  -e HF_TOKEN=<redacted>\
   vllm/vllm-openai:v0.31.0-ubuntu2404\
   --model meta-llama/Llama-3.1-8B-Instruct
 
@@ -196,7 +194,7 @@ Tradeoff: For A100, 1410 MHz is maximum. GPU under high load can reach 300W and 
 
 How to decide: start with 1410. During your first benchmark, watch nvidia-smi -i 2 -q -d CLOCK,PERFORMANCE and look at the actual SM clock and the throttle reasons. If it holds 1410, keep it. If it dips, lower the lock until it stays put.
 
-Command used:
+Command Reference:
 1. Diagnostics & Monitoring
 ⚬	nvidia-smi — View current GPU state, Persistence-M status, and active clocks.
 ⚬	sudo systemctl status nvidia-persistenced — Check if the persistence daemon is running and view its launch arguments.
@@ -211,7 +209,6 @@ Command used:
 3. GPU Tuning & P0 Locking (Targeting Specific GPUs)
 ⚬	sudo nvidia-smi -i 2 -pm 1 — Manually toggle legacy persistence mode on for GPU 2 (if bypassing the daemon).
 ⚬	sudo nvidia-smi -i 2 -pl 250 — Set a strict 250W power limit for GPU 2.
-⚬	sudo nvidia-smi -i 2 -ac 1215,1410 — Lock application memory and graphics clocks to maximum frequencies for GPU 2.
-⚬	sudo nvidia-smi -i 2 -lgc 1410,1410 — Set a hard lock on the core GPU clock bounds to prevent thermal downclocking for GPU 2.
+⚬	sudo nvidia-smi -i 2 -lgc 1410,1410 — lock gpu clock to prevent thermal downclocking for GPU 2.
 4. Making Automation Scripts Executable
 ⚬	sudo chmod +x /usr/local/bin/gpu-tune.sh — Grant execution permissions to your custom tuning bash script before hooking it into systemd.

@@ -65,7 +65,7 @@ Hence, Budget != resident.
 4. KV cache per token:  
 KV cache size (56.21 GiB) in KiB = (56.21*1024*1024) KiB
 KV cache size in tokens = 460,496
-KV cache per token = (56.21*1024*1024)/460,496 = 128 tokens/KiB
+KV cache per token = (56.21*1024*1024)/460,496 = 128KiB/tokens
 
 5. Cold vs warm start. 
 Run 1: model loading 22.07 s. 

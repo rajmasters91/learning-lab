@@ -1,4 +1,5 @@
-Week1: 
+### GIT
+
 The mental model: your files move through three places.
 
 Working directory: files you edit, like any other folder.
@@ -35,9 +36,6 @@ Never edit files in results/. Raw benchmark output is committed once and left al
 Add a ## Git entry to notes/concepts.md once the three-places model clicks. Then carry on with Session 1.
 
 
-
-
-
 One check: your HF_TOKEN goes in the docker run command. If you save that command to config.yaml, write HF_TOKEN=<redacted> rather than the real value.
 
 what is .gitignore?
@@ -64,3 +62,6 @@ One pattern per line. A trailing / means "a directory", * is a wildcard, # start
 Commit the .gitignore itself; it's part of the repo. Then test it: create an empty .env file and run git status. If it doesn't appear, the ignore works.
 
 Why it matters for you: in Session 2 your HF token is in a command line. If you ever save that to a file for convenience, call it .env, and git will refuse to see it. The *.safetensors line protects you from accidentally committing 16 GB of model weights, which GitHub would reject anyway but only after a long, confusing push.
+
+
+
