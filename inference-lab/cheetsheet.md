@@ -65,3 +65,36 @@ Why it matters for you: in Session 2 your HF token is in a command line. If you 
 
 
 
+## Reference
+
+GPU Clock locking:
+GPU's core clock (the SM clock) isn't fixed. It increases with workload and drops when the GPU reaches its power limit or gets hot. => same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, this affects benchmark numbers.
+
+$ nvidia-smi -i 2 -q -d SUPPORTED_CLOCKS        ### lists the allowed values. For A100, SM clocks range from 210 MHz to 1410 MHz. 
+
+Locking => telling the GPU to stay at one SM value: sudo nvidia-smi -i 2 -lgc 1410,1410.
+
+Note: 1512 MHz memory clock on the A100 is fixed and cant be locked. 
+
+Tradeoff: For A100, 1410 MHz is maximum. GPU under high load can reach 300W and hence drops GPU clock below 1410 MHz even when locked. A lower value (say 1200) holds steady but at reduced speed.
+
+How to decide: start with 1410. During your first benchmark, watch nvidia-smi -i 2 -q -d CLOCK,PERFORMANCE and look at the actual SM clock and the throttle reasons. If it holds 1410, keep it. If it dips, lower the lock until it stays put.
+
+Command Reference:
+1. Diagnostics & Monitoring
+⚬	nvidia-smi — View current GPU state, Persistence-M status, and active clocks.
+⚬	sudo systemctl status nvidia-persistenced — Check if the persistence daemon is running and view its launch arguments.
+⚬	sudo journalctl -eu nvidia-persistenced — View the startup logs and error history for the daemon.
+⚬	sudo lsof /dev/nvid* — Verify if the daemon is actively holding the GPU character device files open.
+⚬	nvidia-smi -q -d SUPPORTED_CLOCKS — List the maximum hardware-supported memory and graphics clocks for your GPUs.
+2. Fixing the Persistence Daemon (Update-Resilient Drop-in)
+⚬	sudo mkdir -p /etc/systemd/system/nvidia-persistenced.service.d/ — Create the systemd drop-in directory.
+⚬	sudo bash -c 'echo -e "[Service]\nExecStart=\nExecStart=/usr/bin/nvidia-persistenced --user nvidia-persistenced --verbose" > /etc/systemd/system/nvidia-persistenced.service.d/override.conf' — Create the override file to strip the --no-persistence-mode flag.
+⚬	sudo systemctl daemon-reload — Tell systemd to re-read the configuration and detect the drop-in.
+⚬	sudo systemctl restart nvidia-persistenced — Restart the daemon to apply the persistent state.
+3. GPU Tuning & P0 Locking (Targeting Specific GPUs)
+⚬	sudo nvidia-smi -i 2 -pm 1 — Manually toggle legacy persistence mode on for GPU 2 (if bypassing the daemon).
+⚬	sudo nvidia-smi -i 2 -pl 250 — Set a strict 250W power limit for GPU 2.
+⚬	sudo nvidia-smi -i 2 -lgc 1410,1410 — lock gpu clock to prevent thermal downclocking for GPU 2.
+4. Making Automation Scripts Executable
+⚬	sudo chmod +x /usr/local/bin/gpu-tune.sh — Grant execution permissions to your custom tuning bash script before hooking it into systemd.
