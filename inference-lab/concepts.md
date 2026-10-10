@@ -1,6 +1,5 @@
 ## Concepts: 
 
-Session1:
 
 What has to happen to generate one token? The model weight has to be read from GPU memory, all of it, every time.
 How big is that something for an 8B model in BF16, and why? 16GB
@@ -8,24 +7,28 @@ How fast does reading it from VRAM take at 1.94 TB/s? 8ms/token or ~120 token/se
 Why doesn't compute matter here? Roughly how long does the maths take versus the memory read?
 
 
-bandwidth calculation:
+## Tokens/second for the given model and GPU:
 
 Ex: for meta-llama/Llama-3.1-8B-Instruct model, the bandwidth or token/second calculation is below: 
-1. 8B => 8 Billion parameters.
+
+8B => 8 Billion parameters.
+
 Check config.json file in the hugging face page of the model to identify the model's precision/datatype (dtype) which is "torch_dtype": "bfloat16". Hence BF16 is used for this. Note: this is also found in vLLM startup log (dtype=torch.bfloat16).
 Precisions can be BF16, F32, INT8, INT4,etc. The number mentioned is the bits. so BF16 has 16 bits => 2 bytes.
 VRAM required to load the model on GPU = 8*2 = 16GB.
 
-A100 card reads at  1.94 TB/s. So, 16 GB divided by 1.94 TB/s or 16 GB / 1940 GB/s = 0.008 or 8ms. 
+A100 card reads at  1.94 TB/s. So, 16 GB divided by 1.94 TB/s or 16 GB divided by 1940 GB/s = 0.008 or 8ms. 
 To generate one token using this model, A100 card takes 8.2 millisecond.
 Hence, For 1 second (1/0.0082), ~120 tokens are produced.
 
-Note: Quantization => converting a model from higher precision (ex:F32 or BF16) to a lower precision (INT8, INT4). It increases decode speed but reduces accuracy.
+
+## Quantization vs precision:
+Quantization => converting a model from higher precision (ex:F32 or BF16) to a lower precision (INT8, INT4). It increases decode speed but reduces accuracy.
 ex: 8B model requires 16GB VRAM when BF16 dtype is used (8x2) but same model in INT4 require only 4GB VRAM (8x0.5)
 
 
 
-Why 1.94 TB/s ? i.e., VRAM data transfer speed.
+## VRAM/Memory Bandwidth:  Why 1.94 TB/s ? i.e., VRAM data transfer speed.
 
 ```$ nvidia-smi -i 1 -q -d SUPPORTED_CLOCKS``` -->  Memory clock = 1512 MHz
 NVIDIA's pdf "A100 80GB PCIe datasheet" ->   'memory bus width' = 5120-bit and bf16_tflops=312.
@@ -37,6 +40,9 @@ Thus calculation is,
 × 5120 bits: "memory bus width". 5,120 bits move in parallel on every transfer.
 ÷ 8: bits to bytes.
 = 1.94TB/s
+
+
+## Memory Bound or Compute Bound ? 
 
 At 1.94 TB/s, the throughput of ~120 tokens/s is still "memory-bound" and NOT "compute-bound". Why ?? 
 
@@ -50,7 +56,7 @@ memory read takes 8.2 ms.
 
 => GPU spends about 99% of each step waiting for weights to arrive. That's what memory-bound means: the bottleneck is bandwidth, not calculation.
 
-Why batching works? 
+## Why batching works? 
 
 If 8 users decode at once, the model weight is still read only once per step (not 8 times) and generates 8 tokens (1/user).  Here, memory read stays same at 8.2 ms and Compute raises from 0.05ms to 0.4ms (0.05*8). Still compute time is lower than memory read time while throughput goes 8x (8 tokens). 
 Thus more tokens are generated for the same amount of time in case of batch jobs.
@@ -58,13 +64,14 @@ Thus more tokens are generated for the same amount of time in case of batch jobs
 
 
 
-Xid 79: "GPU has fallen off the bus" => NVIDIA driver has lost communication with the GPU over the PCIe (Peripheral Component Interconnect Express) bus. OS cannot detect or interact with GPU.
+## Xid 79: 
+=> "GPU has fallen off the bus" => NVIDIA driver has lost communication with the GPU over the PCIe (Peripheral Component Interconnect Express) bus. OS cannot detect or interact with GPU.
 Check: dmesg -T | grep -i xid
 Causes: Physical connections (reseat GPU, check power cables), H/w failure, overheating (ex: in dg05, GPU0's power was capped @ 200W to avoid xid79 due to overheating) 
 
 
 
-NVIDIA GPU Persistence Mode:
+# NVIDIA GPU Persistence Mode:
 - Prevents OS kernel from unloading NVIDIA driver even when no processes are actively using the GPUs.
 - Why needed : It eliminates driver initialization latency for compute/headless workloads.
 
@@ -103,8 +110,27 @@ NVIDIA supports two methods for achieving state persistence:
                nvidia-pe 56684 nvidia-persistenced    5u   CHR   195,0      0t0 1001 /dev/nvidia0
 
 
+# GPU Clock locking:
+GPU's core clock (the SM clock) isn't fixed. It increases with workload and drops when the GPU reaches its power limit or gets hot. => same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, this affects benchmark numbers.
 
-Tuning Power and GPU Clocks: Need to create a separate systemd service to make these persistent.
+Locking => telling the GPU to stay at one SM value: sudo nvidia-smi -i 2 -lgc 1410,1410.
+
+nvidia-smi -q -d SUPPORTED_CLOCKS  # Lists maximum hardware-supported memory & graphics/SM clocks for GPUs.
+
+Ex: For A100, 
+SM clocks range from 210 MHz to 1410 MHz -> can be locked
+memory clock fixed at 1512 MHz -> cant be locked. 
+
+Ex: nvidia-smi -i 2 -lgc 1410,1410 — lock min & max gpu clock @1410 MHz to prevent thermal downclocking for GPU 2.
+
+Tradeoff: For A100, 1410 MHz is maximum. High load --> GPU Power reach 300W --> drops GPU clock below 1410 MHz (even when locked). A lower value (say 1200) holds steady but at reduced speed.
+
+How to decide: start with 1410. During your first benchmark, watch nvidia-smi -i 2 -q -d CLOCK,PERFORMANCE and look at the actual SM clock and the throttle reasons. If it holds 1410, keep it. If it dips, lower the lock until it stays put.
+
+
+## Tuning Power and GPU Clocks: 
+
+Need to create a separate systemd service to make these persistent.
  
 Ex: To set max power and clocks refer ExecStart in below systemd config file. This persists across reboots.
 
@@ -137,41 +163,20 @@ Note:
 -lgc  --lock-gpu-clocks=    Specifies <minGpuClock,maxGpuClock> clocks as a pair (e.g. 1410,1410) => range of desired locked GPU clock speed in MHz.
 
 
+## Units: 
+GB (decimal, 10⁹ bytes): datasheets and “16 GB for 8B params”
+GiB (binary, 1024³ bytes): vLLM logs
+MiB (1024² bytes): nvidia-smi
 
 
+## Cold vs warm (Page cache) start. 
+Run 1: model loading 22.07 s. 
+Run 2: 5.42 s, with “Loading weights took 0.87 s”. Same files, same disk. 
 
-
-Session2: 
-
-
-Card used: A100 80GB
-GPU Used: GPU2
-Model used:  Llama-3.1-8B-Instruct
-vllm image used: vllm/vllm-openai:v0.31.0-ubuntu2404
-
-
-docker run --gpus '"device=2"' \
-  --ipc=host \
-  -p 8000:8000 \
-  -v ~/.cache/huggingface:/root/.cache/huggingface \
-  -e HF_TOKEN=<redacted>\
-  vllm/vllm-openai:v0.31.0-ubuntu2404\
-  --model meta-llama/Llama-3.1-8B-Instruct
-
-
-Command Breakdown: 
- --gpus '"device=2"' : assigns GPU with index 2 to the container.
- --ipc=host : shares host's shared memory space with container. Protect vLLM from crashing (due to pytorch shared-memory limits) during inference.
- -p 8000:8000: maps container port 8000 to host port 8000 to expose the webserver.
- -v ~/.cache/huggingface:/root/.cache/huggingface : stores the model in this location in host so that container can reuse the already downloaded model weights and doesnt need to pull it from scratch.
--e HF_TOKEN= : hugging face token passed as environment variable. mandatory for Llama 3.1, as it is a gated model i.e., requires licence acceptance from the model page.
-vllm/vllm-openai:v0.31.0-ubuntu2404 : pulls openai vLLM docker image with tag "v0.31.0-ubuntu2404"
---model meta-llama/Llama-3.1-8B-Instruct : passed as vLLM entrypoint. says which HF model repo to load.
-
-
-
-
-
+What changed between runs? 
+Linux page cache (buff/cache column of free -h) -> model is cached and hence run 2 took less time.
+BUT,
+Compilation stayed at ~15 s both times, so it isn’t cached across container restarts. 
 
 
 

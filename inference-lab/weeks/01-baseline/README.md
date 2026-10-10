@@ -1,18 +1,43 @@
-1. how much GPU memory will nvidia-smi show in use once the vLLM server is idle, and why?
 
+## Hypothesis:
+ how much GPU memory will nvidia-smi show in use once the vLLM server is idle, and why?
 
 My assumption:  It will show 16GB (8B*2) in use since the model is loaded in VRAM. >>> WRONG
 
-Result: see nvidia-smi below. 
-vLLM grabs almost all VRAM front and pre-allocates KV cache, whether or not any request has arrived. 
-Memory in use => budget vLLM was given, NOT how big the model is.
+## Setup:
 
-As per nvidia-smi, 74143 MiB was used at idle. 
+Card used: A100 80GB
+GPU Used: GPU2
+Model used:  Llama-3.1-8B-Instruct
+vllm image used: vllm/vllm-openai:v0.31.0-ubuntu2404
+
+
+docker run --gpus '"device=2"' \
+  --ipc=host \
+  -p 8000:8000 \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -e HF_TOKEN=<redacted>\
+  vllm/vllm-openai:v0.31.0-ubuntu2404\
+  --model meta-llama/Llama-3.1-8B-Instruct
+
+
+Command Breakdown: 
+ --gpus '"device=2"' : assigns GPU with index 2 to the container.
+ --ipc=host : shares host's shared memory space with container. Protect vLLM from crashing (due to pytorch shared-memory limits) during inference.
+ -p 8000:8000: maps container port 8000 to host port 8000 to expose the webserver.
+ -v ~/.cache/huggingface:/root/.cache/huggingface : stores the model in this location in host so that container can reuse the already downloaded model weights and doesnt need to pull it from scratch.
+-e HF_TOKEN= : hugging face token passed as environment variable. mandatory for Llama 3.1, as it is a gated model i.e., requires licence acceptance from the model page.
+vllm/vllm-openai:v0.31.0-ubuntu2404 : pulls openai vLLM docker image with tag "v0.31.0-ubuntu2404"
+--model meta-llama/Llama-3.1-8B-Instruct : passed as vLLM entrypoint. says which HF model repo to load.
 
 
 
+## Results:
 
-VLLM startup log: findings:
+nvidia-smi (74143 MiB used) shows vLLM grabs almost all VRAM upfront and pre-allocates KV cache, whether or not any request has arrived. 
+Memory in use => budget vLLM was given != how big the model is.
+
+# VLLM startup log: findings:
 
 The dtype line (confirms BF16): ```dtype=torch.bfloat16```
 How much memory the weights took, and how long loading took:  
@@ -23,8 +48,7 @@ The max_model_len it chose: ```max model len 131072```
 The "maximum concurrency" line, if present: ```GPU KV cache size: 460,496 tokens, Maximum concurrency for 131,072 tokens per request: 3.51x``
 
 
-
-Actual logs: Run2 
+# Actual logs: Run2 
 
 (EngineCore pid=326) INFO 10-06 17:00:10 [default_loader.py:484] Loading weights took 0.87 seconds
 (EngineCore pid=326) INFO 10-06 17:00:11 [model_runner.py:407] Model loading took 15.0 GiB memory and 5.420225 seconds
@@ -36,7 +60,7 @@ Actual logs: Run2
 (EngineCore pid=326) INFO 10-06 17:00:33 [gpu_worker.py:692] Available KV cache memory: 56.21 GiB
 
 
-Analysis:
+# Analysis:
 
 
 1. Memory Budget: 
@@ -98,9 +122,8 @@ Note:
 A100 card’s total VRAM as per nvidia-smi= 81,920 MiB ÷ 1024 = 80.0 GiB
 vLLM log’s “79.25 GiB total” reports what CUDA can see after the driver reserves its share.
 
-GB (decimal, 10⁹ bytes): datasheets and “16 GB for 8B params”
-GiB (binary, 1024³ bytes): vLLM logs
-MiB (1024² bytes): nvidia-smi
+
+
 
 
 
