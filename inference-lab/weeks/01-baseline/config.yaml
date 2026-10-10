@@ -7,5 +7,9 @@ docker run --gpus '"device=2"' \
   --model meta-llama/Llama-3.1-8B-Instruct
 
 
-
-  
+defaults_in_effect:
+    dtype: bfloat16
+    gpu_memory_utilization: 0.92
+    max_model_len: 131072
+    enable_prefix_caching: true
+    enable_chunked_prefill: true
