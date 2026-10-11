@@ -9,7 +9,7 @@ Git mental model: files moves via 3 places.
 On the node/VS code:
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
-git clone https://github.com/rajmasters91/inference-lab.git
+git clone https://github.com/rajmasters91/learning-lab.git
 cd inference-lab
 
 After any edit: 

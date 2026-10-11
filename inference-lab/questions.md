@@ -5,3 +5,6 @@ The format the weights are stored in and the format the GPU computes in can diff
 because the nvidia-persistenced service runs with "--no-persistence-mode"
 
 
+## Session3
+
+first three or four chunks in every run arrive ~6 ms apart, then it settles to 11.5 ms. The very first chunk is a role-only header with no token, but that doesn’t explain all of them. Why is this ?

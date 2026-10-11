@@ -1,4 +1,4 @@
-### Session 1: Prepare the GPU (about 2 hours)
+## Session 1: Prepare the GPU (about 2 hours)
 
 Use nvidia-smi -q to find whether the card is SXM or PCIe, plus its memory, driver, and CUDA versions.
 Enable persistence mode and lock the clocks. Look up why both matter for repeatable numbers.
@@ -7,7 +7,7 @@ Install the NVIDIA Container Toolkit and prove that a container can see the GPU.
 
 
 
-### Session 2: get the model served on GPU 2 and read what the startup log tells you.
+## Session 2: get the model served on GPU 2 and read what the startup log tells you.
 
 Before you start
 
@@ -48,5 +48,31 @@ Then: compare idle memory use to your prediction. The gap, if any, is your first
 
 Bring back the five log lines and the nvidia-smi reading.
 
+
+
+
+## Session 3: talk to the server
+
+Goal: see tokens, prefill and decode with your own eyes before the benchmark tool hides them behind summary numbers.
+
+1. Is it there?
+curl http://localhost:8000/v1/models should list the model.
+
+2. One chat request. POST to /v1/chat/completions with a JSON body containing model, messages (one user message) and max_tokens: 64. Look at the usage block in the response: prompt_tokens, completion_tokens, total_tokens. Paste the prompt into a tokenizer tool (Hugging Face has one on the model page) and check the count matches.
+
+3. Write the prediction, then test it. Two requests, both max_tokens: 64:
+
+Short prompt: ~20 tokens
+Long prompt: ~2,000 tokens (paste a few paragraphs of anything)
+
+Predict: which is slower, by roughly how much, and which phase takes the extra time? Then time both with time curl ....
+
+4. See the phases separately. Add "stream": true to the body. The response arrives as chunks: the pause before the first chunk is TTFT (prefill); the rhythm of the chunks after it is decode. Run the long prompt streaming and watch where the wait is.
+
+5. Peek at the metrics. curl http://localhost:8000/metrics | grep -E "prompt_tokens|generation_tokens|time_to_first_token". This is what Grafana will read in Week 2.
+
+Record in the Week 1 README under Results: the usage numbers, the two timings, your prediction vs what happened, and one sentence on what streaming showed you.
+
+Check your understanding afterwards: why did the long prompt cost extra time in one phase but not the other?
 
 

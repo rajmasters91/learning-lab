@@ -1,0 +1,260 @@
+## Run 1: Cache hit
+
+root@dg05:~# ./stream_test.sh
+   0.182  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.189  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.196  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.202  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.215  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.226  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.238  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.250  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.261  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.273  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.284  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.295  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.307  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.319  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.330  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.342  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.354  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.365  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.376  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.387  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.399  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.410  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.421  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.434  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.445  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.456  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.468  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.479  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.490  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.502  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.513  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.525  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.536  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.548  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.559  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.571  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.582  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.594  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.605  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.617  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.628  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.640  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.651  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.662  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.674  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.685  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.697  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.708  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.720  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.731  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.742  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.754  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.766  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.777  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.788  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.800  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.811  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.823  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.833  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.845  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.857  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.868  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.879  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.891  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.903  data: {"id":"chatcmpl-bdc514b73311a28f","object":"chat.completion.chunk","create
+   0.908  data: [DONE]
+
+
+## Run 2: Cache miss
+
+root@dg05:~# ./stream_test.sh
+   0.042  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.048  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.053  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.060  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.072  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.083  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.095  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.107  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.118  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.129  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.141  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.152  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.163  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.175  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.187  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.199  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.210  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.221  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.232  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.244  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.255  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.267  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.278  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.290  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.301  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.313  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.324  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.336  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.347  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.359  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.370  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.381  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.393  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.404  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.416  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.427  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.438  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.450  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.460  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.472  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.484  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.495  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.507  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.519  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.530  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.543  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.553  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.565  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.577  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.588  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.599  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.611  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.622  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.634  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.646  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.657  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.668  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.680  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.691  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.702  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.714  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.726  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.737  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.748  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.760  data: {"id":"chatcmpl-a8b01a3009b56981","object":"chat.completion.chunk","create
+   0.765  data: [DONE]
+
+## Run 3: Cache miss
+
+root@dg05:~# ./stream_test.sh
+   0.047  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.053  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.058  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.064  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.076  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.088  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.099  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.111  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.123  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.134  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.145  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.157  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.168  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.180  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.191  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.203  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.214  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.226  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.237  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.248  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.260  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.271  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.282  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.293  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.305  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.317  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.329  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.340  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.351  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.363  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.374  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.386  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.397  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.409  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.420  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.431  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.443  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.454  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.466  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.477  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.488  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.500  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.512  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.523  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.534  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.546  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.557  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.569  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.582  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.592  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.604  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.615  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.627  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.638  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.649  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.660  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.672  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.684  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.696  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.707  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.719  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.730  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.741  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.753  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.764  data: {"id":"chatcmpl-b88dad5fe83fb825","object":"chat.completion.chunk","create
+   0.769  data: [DONE]
+
+
+root@dg05:~# cat stream_test.sh
+#!/bin/bash
+start=$(date +%s.%N)
+curl -sN http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d @long_prompt.json \
+| while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    now=$(date +%s.%N)
+    printf '%8.3f  %s\n' "$(echo "$now - $start" | bc)" "${line:0:80}"
+  done
+
+
+
+root@dg05:~# cat long_prompt.json
+{
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "messages": [
+      {
+        "role": "user",
+        "content": "is it possible to gain intelligence after 35yrs of age ?  how to lead a complete life?  It is the threshold where money ceases to be the primary dictator of your daily decisions, allowing you to walk away from toxic environments, unfulfilling work, or transactional relationships without fear of ruin.However, stopping at financial freedom often leads to an unexpected emptiness. To live a truly wealthy life, you must recognize that money is just the baseline. The true pursuit should be for time freedom, which is the ability to own your calendar and dictate your daily rhythm; location freedom, the ability to live or work in environments that nourish you; and profoundly, mental freedom. Mental freedom is the liberation from the opinions of others, the need for societal validation, and the heavy burden of your own ego. It is the quiet confidence of knowing who you are when the titles and net worth are stripped away.When a person achieves financial freedom, the immediate question shifts from How do I survive? to What is my life actually for? The most common mistake is confusing retirement with leisure. A life consisting solely of golf and beaches quickly decays into boredom. Instead, the aim should shift from success to significance. You live a full life by finding a purpose that demands your engagement—whether that is mentoring, building a passion project, solving a local community problem, or creating art. A full life requires meaningful struggle. You must choose the burdens you want to carry rather than having them forced upon you by economic necessity.Safeguarding your family in this stage goes far beyond establishing trusts, life insurance, and legal wills—though those structural defenses are non-negotiable. True safeguarding means protecting your family from the toxicity of unearned entitlement. Wealth can easily act as an insulator that prevents your loved ones from experiencing the friction necessary for growth. To protect them, you must establish an environment where character, rather than consumption, is the family’s defining currency.This ties directly into raising independent children. The greatest disservice you can do to a child is to hand them a frictionless life. Resilience is built through managed adversity, not through avoidance of pain. To raise independent kids when you have means, you must intentionally allow them to fail. Give them the freedom to make choices with real, natural consequences. Do not bail them out of minor mistakes. Teach them the mechanics of wealth creation rather than just the habits of wealth consumption. Require them to work jobs where they are not the boss, where they must answer to authority, and where they learn the dignity of earning their own keep. Your goal is not to leave them a massive inheritance, but to leave them with the absolute certainty that if they woke up tomorrow with nothing, they have the internal machinery to rebuild it all.Which of these freedoms—time, location, or mental—do you feel is currently the biggest bottleneck in your own life? Financial freedom is rarely about the accumulation of luxury; it is fundamentally about the sovereignty of choice. It is the threshold where money ceases to be the primary dictator of your daily decisions, allowing you to walk away from toxic environments, unfulfilling work, or transactional relationships without fear of ruin.However, stopping at financial freedom often leads to an unexpected emptiness. To live a truly wealthy life, you must recognize that money is just the baseline. The true pursuit should be for time freedom, which is the ability to own your calendar and dictate your daily rhythm; location freedom, the ability to live or work in environments that nourish you; and profoundly, mental freedom. Mental freedom is the liberation from the opinions of others, the need for societal validation, and the heavy burden of your own ego. It is the quiet confidence of knowing who you are when the titles and net worth are stripped away.When a person achieves financial freedom, the immediate question shifts from How do I survive? to What is my life actually for? The most common mistake is confusing retirement with leisure. A life consisting solely of golf and beaches quickly decays into boredom. Instead, the aim should shift from success to significance. You live a full life by finding a purpose that demands your engagement—whether that is mentoring, building a passion project, solving a local community problem, or creating art. A full life requires meaningful struggle. You must choose the burdens you want to carry rather than having them forced upon you by economic necessity.Safeguarding your family in this stage goes far beyond establishing trusts, life insurance, and legal wills—though those structural defenses are non-negotiable. True safeguarding means protecting your family from the toxicity of unearned entitlement. Wealth can easily act as an insulator that prevents your loved ones from experiencing the friction necessary for growth. To protect them, you must establish an environment where character, rather than consumption, is the family’s defining currency.This ties directly into raising independent children. The greatest disservice you can do to a child is to hand them a frictionless life. Resilience is built through managed adversity, not through avoidance of pain. To raise independent kids when you have means, you must intentionally allow them to fail. Give them the freedom to make choices with real, natural consequences. Do not bail them out of minor mistakes. Teach them the mechanics of wealth creation rather than just the habits of wealth consumption. Require them to work jobs where they are not the boss, where they must answer to authority, and where they learn the dignity of earning their own keep. Your goal is not to leave them a massive inheritance, but to leave them with the absolute certainty that if they woke up tomorrow with nothing, they have the internal machinery to rebuild it all.Which of these freedoms—time, location, or mental—do you feel is currently the biggest bottleneck in your own life?Financial freedom is rarely about the accumulation of luxury; it is fundamentally about the sovereignty of choice. It is the threshold where money ceases to be the primary dictator of your daily decisions, allowing you to walk away from toxic environments, unfulfilling work, or transactional relationships without fear of ruin.However, stopping at financial freedom often leads to an unexpected emptiness. To live a truly wealthy life, you must recognize that money is just the baseline. The true pursuit should be for time freedom, which is the ability to own your calendar and dictate your daily rhythm; location freedom, the ability to live or work in environments that nourish you; and profoundly, mental freedom. Mental freedom is the liberation from the opinions of others, the need for societal validation, and the heavy burden of your own ego. It is the quiet confidence of knowing who you are when the titles and net worth are stripped away.When a person achieves financial freedom, the immediate question shifts from How do I survive? to What is my life actually for? The most common mistake is confusing retirement with leisure. A life consisting solely of golf and beaches quickly decays into boredom. Instead, the aim should shift from success to significance. You live a full life by finding a purpose that demands your engagement—whether that is mentoring, building a passion project, solving a local community problem, or creating art. A full life requires meaningful struggle. You must choose the burdens you want to carry rather than having them forced upon you by economic necessity.Safeguarding your family in this stage goes far beyond establishing trusts, life insurance, and legal wills—though those structural defenses are non-negotiable. True safeguarding means protecting your family from the toxicity of unearned entitlement. Wealth can easily act as an insulator that prevents your loved ones from experiencing the friction necessary for growth. To protect them, you must establish an environment where character, rather than consumption, is the family’s defining currency.This ties directly into raising independent children. The greatest disservice you can do to a child is to hand them a frictionless life. Resilience is built through managed adversity, not through avoidance of pain. To raise independent kids when you have means, you must intentionally allow them to fail. Give them the freedom to make choices with real, natural consequences. Do not bail them out of minor mistakes. Teach them the mechanics of wealth creation rather than just the habits of wealth consumption. Require them to work jobs where they are not the boss, where they must answer to authority, and where they learn the dignity of earning their own keep. Your goal is not to leave them a massive inheritance, but to leave them with the absolute certainty that if they woke up tomorrow with nothing, they have the internal machinery to rebuild it all.Which of these freedoms—time, location, or mental—do you feel is currently the biggest bottleneck in your own life? Financial freedom is rarely about the accumulation of luxury; it is fundamentally about the sovereignty of choice. It is the threshold where money ceases to be the primary dictator of your daily decisions, allowing you to walk away from toxic environments, unfulfilling work, or transactional relationships without fear of ruin.However, stopping at financial freedom often leads to an unexpected emptiness. To live a truly wealthy life, you must recognize that money is just the baseline. The true pursuit should be for time freedom, which is the ability to own your calendar and dictate your daily rhythm; location freedom, the ability to live or work in environments that nourish you; and profoundly, mental freedom. Mental freedom is the liberation from the opinions of others, the need for societal validation, and the heavy burden of your own ego. It is the quiet confidence of knowing who you are when the titles and net worth are stripped away.When a person achieves financial freedom, the immediate question shifts from How do I survive? to What is my life actually for? The most common mistake is confusing retirement with leisure. A life consisting solely of golf and beaches quickly decays into boredom. Instead, the aim should shift from success to significance. You live a full life by finding a purpose that demands your engagement—whether that is mentoring, building a passion project, solving a local community problem, or creating art. A full life requires"
+      }
+    ],
+    "return_token_strs": true,
+    "max_tokens": 64,
+    "min_tokens": 64,
+    "stream": true  #required for stream run
+}
+root@dg05:~#
+
+
+## Long prompt evaluated with time command: 
+
+Run1: Cache hit
+
+root@dg05:~# time "./long_prompt.sh"
+{"id":"chatcmpl-8b9860dd2934599b","object":"chat.completion","created":1791672969,"model":"meta-llama/Llama-3.1-8B-Instruct","choices":[{"index":0,"message":{"role":"assistant","content":"The common thread across philosophers of all time, as reflected in the provided text, is the pursuit of a complete and meaningful life. This involves transcending the mere accumulation of wealth and material possessions to focus on true wealth, which encompasses time freedom, location freedom, and mental freedom.\n\nThe key principles that emerge from this discussion","refusal":null,"annotations":null,"audio":null,"function_call":null,"reasoning":null},"logprobs":null,"finish_reason":"length","stop_reason":null,"token_ids":null,"routed_experts":null}],"service_tier":null,"system_fingerprint":"vllm-0.31.0-83683f82","usage":{"prompt_tokens":2065,"total_tokens":2129,"completion_tokens":64,"prompt_tokens_details":null,"completion_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"prompt_text":null,"kv_transfer_params":null,"ec_transfer_params":null,"metrics":null}
+real	0m0.904s
+user	0m0.004s
+sys	0m0.008s
+
+Run2: Cache miss
+
+root@dg05:~# time "./long_prompt.sh"
+{"id":"chatcmpl-bc508fbead7da5c2","object":"chat.completion","created":1791672974,"model":"meta-llama/Llama-3.1-8B-Instruct","choices":[{"index":0,"message":{"role":"assistant","content":"The text highlights common themes across philosophers of all time, focusing on how to lead a complete life. The main idea is that financial freedom is just the baseline, and the true pursuit should be for time freedom, location freedom, and mental freedom.\n\n**Commonalities across philosophers:**\n\n1. **The importance of purpose","refusal":null,"annotations":null,"audio":null,"function_call":null,"reasoning":null},"logprobs":null,"finish_reason":"length","stop_reason":null,"token_ids":null,"routed_experts":null}],"service_tier":null,"system_fingerprint":"vllm-0.31.0-83683f82","usage":{"prompt_tokens":2065,"total_tokens":2129,"completion_tokens":64,"prompt_tokens_details":null,"completion_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"prompt_text":null,"kv_transfer_params":null,"ec_transfer_params":null,"metrics":null}
+real	0m0.762s
+user	0m0.002s
+sys	0m0.011s

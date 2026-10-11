@@ -71,7 +71,7 @@ Causes: Physical connections (reseat GPU, check power cables), H/w failure, over
 
 
 
-# NVIDIA GPU Persistence Mode:
+## NVIDIA GPU Persistence Mode:
 - Prevents OS kernel from unloading NVIDIA driver even when no processes are actively using the GPUs.
 - Why needed : It eliminates driver initialization latency for compute/headless workloads.
 
@@ -110,7 +110,7 @@ NVIDIA supports two methods for achieving state persistence:
                nvidia-pe 56684 nvidia-persistenced    5u   CHR   195,0      0t0 1001 /dev/nvidia0
 
 
-# GPU Clock locking:
+## GPU Clock locking:
 GPU's core clock (the SM clock) isn't fixed. It increases with workload and drops when the GPU reaches its power limit or gets hot. => same benchmark can run at 1,410 MHz one minute and 1,250 MHz the next, this affects benchmark numbers.
 
 Locking => telling the GPU to stay at one SM value: sudo nvidia-smi -i 2 -lgc 1410,1410.
@@ -134,6 +134,7 @@ Need to create a separate systemd service to make these persistent.
  
 Ex: To set max power and clocks refer ExecStart in below systemd config file. This persists across reboots.
 
+```
 root@dg05:~# systemctl cat haishare-gpu0-thermal.service
 # /etc/systemd/system/haishare-gpu0-thermal.service
 [Unit]
@@ -156,7 +157,7 @@ WantedBy=multi-user.target
 root@dg05:~#
 root@dg05:~# sudo systemctl daemon-reload
 root@dg05:~# sudo systemctl restart nvidia-persistenced
-
+```
 
 Note:    
 -i,   --id=                 Target a specific GPU or Unit.    
@@ -181,3 +182,33 @@ Compilation stayed at ~15 s both times, so it isn’t cached across container re
 
 
 
+## KV Cache : From Gemini
+
+KV Cache (Key-Value Cache) =  memory optimization technique used in LLMs & Transformer-based AI models to speed up text generation process.
+
+Problem It Solves
+LLMs generate text "autoregressively" => they predict one word (token) at a time. 
+To predict the next word, the model needs to look back at all the previous words in the conversation to understand the context. Without a cache, the model would have to recalculate the mathematical representations of every single previous word for every new word it generates. This is incredibly slow and computationally expensive.
+
+How KV Cache Works
+In a Transformer model, the "Attention" mechanism uses 3 vectors for every token: Queries (Q), Keys (K), and Values (V).
+⚬	Query => what the current token is looking for.
+⚬	Key => label describing a past token.
+⚬	Value => actual content of that past token.
+Instead of recalculating the Keys and Values for past tokens every step, the model calculates them once and saves them in the KV Cache. When generating a new token, the model only computes the Query, Key, and Value for that new single token, and compares its Query against the cached Keys and Values of the past.
+
+Pros and Cons
+⚬	speeds up text generation (lowers latency) and saves compute.
+⚬	Trade-off: Storing these vectors takes up a lot of memory (VRAM). As a conversation gets longer (larger context window), the KV cache grows rapidly. OOM due to a massive KV cache is main bottlenecks in hosting LLMs today.
+
+
+
+
+## prefix caching:
+prefix caching is used to reduce TTFT for recurring queries.
+Prefix caching needs to be true in config.
+If we change first few words for the same prompt, prefix caching will miss and TOFT will be higher.
+
+## TTFT vs TPOT: Time To First Token vs Time Per Output Token
+
+## chat template overhead: 

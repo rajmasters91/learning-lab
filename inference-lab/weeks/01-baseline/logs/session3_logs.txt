@@ -1,0 +1,25 @@
+
+
+
+root@dg05:~# curl http://localhost:8000/v1/models
+{"object":"list","data":[{"id":"meta-llama/Llama-3.1-8B-Instruct","object":"model","created":1791635661,"owned_by":"vllm","root":"meta-llama/Llama-3.1-8B-Instruct","parent":null,"max_model_len":131072,"permission":[{"id":"modelperm-9b4b92a3d50b9b50","object":"model_permission","created":1791635661,"allow_create_engine":false,"allow_sampling":true,"allow_logprobs":true,"allow_search_indices":false,"allow_view":true,"allow_fine_tuning":false,"organization":"*","group":null,"is_blocking":false}]}]}root@dg05:~#
+root@dg05:~#
+
+
+root@dg05:~# curl -X POST http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "messages": [
+      {
+        "role": "user",
+        "content": "explain universe in a line"
+      }
+    ],
+    "max_tokens": 64
+  }'
+{"id":"chatcmpl-962d6542cdc22624","object":"chat.completion","created":1791637064,"model":"meta-llama/Llama-3.1-8B-Instruct","choices":[{"index":0,"message":{"role":"assistant","content":"The universe is the vast, ever-expanding expanse of space and time that contains all matter, energy, and celestial objects, governed by physical laws and governed by the Big Bang theory.","refusal":null,"annotations":null,"audio":null,"function_call":null,"reasoning":null},"logprobs":null,"finish_reason":"stop","stop_reason":null,"token_ids":null,"routed_experts":null}],"service_tier":null,"system_fingerprint":"vllm-0.31.0-83683f82","usage":{"prompt_tokens":40,"total_tokens":79,"completion_tokens":39,"prompt_tokens_details":null,"completion_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"prompt_text":null,"kv_transfer_params":null,"ec_transfer_params":null,"metrics":null}root@dg05:~#
+
+
+
+
