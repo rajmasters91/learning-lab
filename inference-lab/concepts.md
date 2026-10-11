@@ -211,4 +211,30 @@ If we change first few words for the same prompt, prefix caching will miss and T
 
 ## TTFT vs TPOT: Time To First Token vs Time Per Output Token
 
+LLM generation = 2 phases
+1. Prefill: Reading prompt
+2. Decode: generating response
+
+LLM Metrics: 
+- TTFT: Prefill Phase. 
+     - Time b/w user submitting the prompt & First token generation.
+     - Compute-bound.
+     - KV Cache is built
+     - measures latency
+
+- TPOT (Inter-token latency/ITL): Decode phase
+     - average time to generate each subsequent token after first one.
+     - memory-bandwidth-bound.
+     - measures throughput
+
 ## chat template overhead: 
+
+What it is: a chat endpoint doesn’t send your message to the model as-is. The server wraps it in the model’s chat template: special tokens that mark the start of text, who is speaking (system, user, assistant), and where each turn ends, plus any default system text. For Llama 3.1 that wrapper is 35 tokens, and includes a hardcoded “Today Date: 26 Jul 2024” line.
+
+Where I saw it: /tokenize returned 40 tokens for a 5-token sentence. IDs above 128000 (128000, 128006, 128007, 128009) are the structural special tokens; 9125/882/78191 are “system”/”user”/”assistant”.
+
+Why it matters:
+
+Short prompts are mostly template. 35 of 40 tokens were overhead, so for a one-line question prefill is dominated by the wrapper, not the user.
+The wrapper is identical for every request, which is exactly what prefix caching reuses. Those 35 tokens are computed once and served from cache afterwards.
+/v1/completions (the raw endpoint) adds no template; use it when you want to control the exact tokens, as a benchmark tool does.

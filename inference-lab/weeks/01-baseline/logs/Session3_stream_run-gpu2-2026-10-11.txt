@@ -1,3 +1,35 @@
+### short_prompts
+
+## Run1
+
+root@dg05:~# time "./short_prompt.sh"
+{"id":"chatcmpl-b10af91718225ca6","object":"chat.completion","created":1791672541,"model":"meta-llama/Llama-3.1-8B-Instruct","choices":[{"index":0,"message":{"role":"assistant","content":"Financial freedom can be defined as the ability to generate sufficient passive income to cover one's living expenses, allowing for the freedom to pursue goals and interests without being constrained by the need for a traditional salary. As a CFA, I would emphasize the importance of achieving a net worth that generates a sustainable income stream, such as","refusal":null,"annotations":null,"audio":null,"function_call":null,"reasoning":null},"logprobs":null,"finish_reason":"length","stop_reason":null,"token_ids":null,"routed_experts":null}],"service_tier":null,"system_fingerprint":"vllm-0.31.0-83683f82","usage":{"prompt_tokens":45,"total_tokens":109,"completion_tokens":64,"prompt_tokens_details":null,"completion_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"prompt_text":null,"kv_transfer_params":null,"ec_transfer_params":null,"metrics":null}
+real	0m0.740s
+user	0m0.003s
+sys	0m0.009s
+
+## Run2
+
+root@dg05:~# time "./short_prompt.sh"
+{"id":"chatcmpl-bfc004fb2c0f6614","object":"chat.completion","created":1791672543,"model":"meta-llama/Llama-3.1-8B-Instruct","choices":[{"index":0,"message":{"role":"assistant","content":"As a CFA (Chartered Financial Analyst), I'd define financial freedom as having sufficient wealth and passive income to cover one's living expenses, allowing for the pursuit of personal goals and interests without the burden of financial stress. This often requires a disciplined investment strategy, tax-efficient wealth management, and a well-diversified","refusal":null,"annotations":null,"audio":null,"function_call":null,"reasoning":null},"logprobs":null,"finish_reason":"length","stop_reason":null,"token_ids":null,"routed_experts":null}],"service_tier":null,"system_fingerprint":"vllm-0.31.0-83683f82","usage":{"prompt_tokens":45,"total_tokens":109,"completion_tokens":64,"prompt_tokens_details":null,"completion_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"prompt_text":null,"kv_transfer_params":null,"ec_transfer_params":null,"metrics":null}
+real	0m0.741s
+user	0m0.004s
+sys	0m0.008s
+
+
+## Run3
+
+root@dg05:~# time "./short_prompt.sh"
+{"id":"chatcmpl-bf85c906e4a2d748","object":"chat.completion","created":1791672545,"model":"meta-llama/Llama-3.1-8B-Instruct","choices":[{"index":0,"message":{"role":"assistant","content":"Financial freedom, in my opinion as a CFA, can be achieved when an individual's net worth exceeds their annual expenses, allowing for a perpetual stream of passive income to cover living costs, while also having the flexibility to pursue personal goals and interests without being burdened by financial stress. This typically requires a disciplined approach to","refusal":null,"annotations":null,"audio":null,"function_call":null,"reasoning":null},"logprobs":null,"finish_reason":"length","stop_reason":null,"token_ids":null,"routed_experts":null}],"service_tier":null,"system_fingerprint":"vllm-0.31.0-83683f82","usage":{"prompt_tokens":45,"total_tokens":109,"completion_tokens":64,"prompt_tokens_details":null,"completion_tokens_details":null},"prompt_logprobs":null,"prompt_token_ids":null,"prompt_text":null,"kv_transfer_params":null,"ec_transfer_params":null,"metrics":null}
+real	0m0.741s
+user	0m0.005s
+sys	0m0.007s
+
+
+
+
+### long_prompts
+
 ## Run 1: Cache hit
 
 root@dg05:~# ./stream_test.sh
