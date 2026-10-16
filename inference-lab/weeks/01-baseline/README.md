@@ -1,5 +1,17 @@
 ## Setup:
 
+
+### Hypothesis:
+ how much GPU memory will nvidia-smi show in use once the vLLM server is idle, and why?
+
+My assumption:  It will show 16GB (8B*2) in use since the model is loaded in VRAM. >>> WRONG
+
+
+
+nvidia-smi (74143 MiB used) shows vLLM grabs almost all VRAM upfront and pre-allocates KV cache, whether or not any request has arrived. 
+Memory in use => budget vLLM was given != how big the model is.
+
+
 Card used: A100 80GB
 GPU Used: GPU2
 Model used:  Llama-3.1-8B-Instruct
@@ -31,15 +43,6 @@ vllm/vllm-openai:v0.31.0-ubuntu2404 : pulls openai vLLM docker image with tag "v
 
 ### Session 2
 
-Hypothesis:
- how much GPU memory will nvidia-smi show in use once the vLLM server is idle, and why?
-
-My assumption:  It will show 16GB (8B*2) in use since the model is loaded in VRAM. >>> WRONG
-
-
-
-nvidia-smi (74143 MiB used) shows vLLM grabs almost all VRAM upfront and pre-allocates KV cache, whether or not any request has arrived. 
-Memory in use => budget vLLM was given != how big the model is.
 
 1. VLLM startup log: findings:
 
@@ -185,8 +188,6 @@ Note: To find the token count of a prompt, use the model’s own tokenizer only.
 
 
 
-
-
 3. Predicted prefill 104 ms, measured ~140 ms; the gap is attention and overhead.
 
 
@@ -204,24 +205,27 @@ Note: FLOP is an amount of work; FLOPS (per second) is a rate.
 At 312 TFLOPS (i.e.,TFLOP/s) for A100 card, 2000 token prompt takes ~104 ms (33/312) for prefill compute.
 
 Short Prompt:
-For a 10 token prompt , (2 x 8 x 10^9 x 45)/(10^12) = 0.72 TFLOPS
-At 312 TFLOPS/s for A100 card, 10 token prompt takes 0.23 ms for prefill compute. 
+For a 10 token prompt , (2 x 8 x 10^9 x 45)/(10^12) = 0.72 TFLOP
+At 312 TFLOPS (TFLOP/s) for A100 card, 10 token prompt takes 0.23 ms for prefill compute. 
 
 
 4. Prefix caching discovered via hidden state; confirmed by editing one early word.
 
+
+Prefix = leading part of a prompt that is identical to a previous prompt’s leading part. vLLM server caches KV entries for that shared prefix and reuses them. 
+
 Long prompt's Run1 -> query took 0.904s. 
-But, for Run2,3 of same prompt -> query took only ~760s => prefill was KV cached.
+But, for Run2,3 of same prompt -> query took only ~0.760s => Prefix was KV cached.
 
-But when i changed first few words of the prompt, KV cache for prefill became useless -> query again took 0.904s.
+But when i changed first few words of the prompt, KV cache for Prefix became useless -> query again took 0.904s.
 
-
+In vLLM the flag is --enable-prefix-caching (ON by default in this vLLM used for this test)
 
 5. Decode: 11.5 ms/token ≈ 87 tokens/s ≈ 72% of the 120 tokens/s ceiling.
 
-Short prompt (45 tokens) took 0.741s. Assume 0.05ms for prefill compute and HTTP & request handling. 
+Short prompt (45 tokens) took 0.741s. Assume 5ms (0.005s) for prefill compute and HTTP & request handling. 
 
-=> Total decode time = 0.741 - 0.05 = 0.736s
+=> Total decode time = 0.741 - 0.005 = 0.736s
 
 We set min_tokens=64 => decode produced 64 tokens.
 
@@ -242,3 +246,16 @@ first three or four chunks in every run arrive ~6 ms apart, then it settles to 1
 First chunk = role-only header with no token.
 But that doesn’t explain all of them.
 This anamoly is added in questions.md page.
+
+
+### Session 4:
+
+```docker run --rm --entrypoint vllm vllm/vllm-openai:v0.31.0-ubuntu2404 bench serve --help=all```
+
+Note:
+In a scientific benchmark, you only want to change one variable at a time. in session 4 we change the variable "request rate" i.e., number of requests per second : 1,4,32,64,inf.
+
+Prediction:
+how will TTFT differ between the warm-up and run 1, and how will TPOT differ?
+TTFT will lesser in run1 compared to the warm-up run. 
+TPOT will be the same. 

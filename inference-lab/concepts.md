@@ -182,7 +182,14 @@ Compilation stayed at ~15 s both times, so it isn’t cached across container re
 
 
 
-## KV Cache : From Gemini
+## KV Cache : 
+
+KV cache 
+- memory of each computed tokens stored by the model so it doesnt recompute past tokens in subsequent prompts
+- grows with context x concurrency
+- 56.21GiB for A100 (128KiB/token)
+
+### Reference From Gemini
 
 KV Cache (Key-Value Cache) =  memory optimization technique used in LLMs & Transformer-based AI models to speed up text generation process.
 
@@ -227,7 +234,7 @@ LLM Metrics:
      - memory-bandwidth-bound.
      - measures throughput
 
-## chat template overhead: 
+## chat template overhead: ex: "/v1/chat/completions" endpoint 
 
 What it is: a chat endpoint doesn’t send your message to the model as-is. The server wraps it in the model’s chat template: special tokens that mark the start of text, who is speaking (system, user, assistant), and where each turn ends, plus any default system text. For Llama 3.1 that wrapper is 35 tokens, and includes a hardcoded “Today Date: 26 Jul 2024” line.
 
@@ -238,3 +245,8 @@ Why it matters:
 Short prompts are mostly template. 35 of 40 tokens were overhead, so for a one-line question prefill is dominated by the wrapper, not the user.
 The wrapper is identical for every request, which is exactly what prefix caching reuses. Those 35 tokens are computed once and served from cache afterwards.
 /v1/completions (the raw endpoint) adds no template; use it when you want to control the exact tokens, as a benchmark tool does.
+
+
+
+
+ 
