@@ -207,21 +207,21 @@ No cache => model recalculate the mathematical representations of every single p
 
 How KV Cache Works
 In a Transformer model, the "Attention" mechanism uses 3 vectors for every token: Queries (Q), Keys (K), and Values (V).
-⚬	Query => what the current token is looking for.
-⚬	Key => label of past token.
-⚬	Value =>  content of that past token.
-Instead of recalculating the Keys and Values for past tokens every step, the model calculates them once and saves them in the KV Cache. When generating a new token, the model only computes the Query, Key, and Value for that new single token, and compares its Query against the cached Keys and Values of the past.
+1. Query => what the current token is looking for.
+2.  Key => label of past token.
+3.  Value =>  content of that past token.
+Model calculates Keys & Values for a particular step or token and saves them in KV cache.
+When generating a new token (i.e., a For subsequent step), model only computes Query, Key, & Value for that new single token, and compares its Query against the cached Keys & Values of the past.
 
 Pros and Cons
-⚬	speeds up text generation (lowers latency) and saves compute.
-⚬	Trade-off: Storing these vectors takes up a lot of memory (VRAM). As a conversation gets longer (larger context window), the KV cache grows rapidly. OOM due to a massive KV cache is main bottlenecks in hosting LLMs today.
-
+- speeds up text generation (lowers latency) and saves compute.
+- Trade-off: Storing these vectors takes up a lot of memory (VRAM). i.e., longer conversation (larger context window) => large KV cache = OOM due to a massive KV cache. --> main bottleneck in hosting LLMs.
 
 
 ## prefix caching:
-prefix caching is used to reduce TTFT for recurring queries.
-Prefix caching needs to be true in config.
-If we change first few words for the same prompt, prefix caching will miss and TOFT will be higher.
+To reduce TTFT for recurring queries.
+Needs to be set as true in config.
+If we change first few words for the same prompt, prefix caching will miss => TOFT will be higher.
 
 ## TTFT vs TPOT: Time To First Token vs Time Per Output Token
 
@@ -238,20 +238,25 @@ LLM Metrics:
 
 - TPOT (Inter-token latency/ITL): Decode phase
      - average time to generate each subsequent token after first one.
-     - memory-bandwidth-bound.
+     - memory-bandwidth bound.
      - measures throughput
 
 ## chat template overhead: ex: "/v1/chat/completions" endpoint 
 
-What it is: a chat endpoint doesn’t send your message to the model as-is. The server wraps it in the model’s chat template: special tokens that mark the start of text, who is speaking (system, user, assistant), and where each turn ends, plus any default system text. For Llama 3.1 that wrapper is 35 tokens, and includes a hardcoded “Today Date: 26 Jul 2024” line.
+What it is: chat endpoint doesn’t send user prompt to model as-is. vLLM server wraps user prompt in model’s chat template. 
+For Llama 3.1, wrapper is 35 tokens, and includes a hardcoded “Today Date: 26 Jul 2024” line.
+
+chat template = special tokens that mark start of text, who is speaking (system, user, assistant), and where each turn ends, plus any default system text
 
 Where I saw it: /tokenize returned 40 tokens for a 5-token sentence. IDs above 128000 (128000, 128006, 128007, 128009) are the structural special tokens; 9125/882/78191 are “system”/”user”/”assistant”.
 
 Why it matters:
 
-Short prompts are mostly template. 35 of 40 tokens were overhead, so for a one-line question prefill is dominated by the wrapper, not the user.
-The wrapper is identical for every request, which is exactly what prefix caching reuses. Those 35 tokens are computed once and served from cache afterwards.
-/v1/completions (the raw endpoint) adds no template; use it when you want to control the exact tokens, as a benchmark tool does.
+Short prompts are mostly template. 
+35 of 40 tokens were overhead, so for a one-line question prefill is dominated by the wrapper, not the user.
+Wrapper is identical for every request --> prefix caching =>  Those 35 tokens are computed once and served from cache afterwards.
+
+/v1/completions (the raw endpoint) adds no template; used to control the exact tokens, as a benchmark tool does.
 
 
 
