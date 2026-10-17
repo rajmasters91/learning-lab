@@ -5,7 +5,7 @@ memory_gb: 80              # VRAM
 memory_type: HBM2e         # GPU Memory class. ex: DDR = memory class used in servers
 memory_clock_mhz: 1512
 bus_width_bits: 5120
-bandwidth_tbs: 1.94        # 1512 MHz x 2 x 5120 bits / 8
+bandwidth_tbs: 1.94        # 1512 MHz x 2 x 5120 bits / 8 = 1.94TB/s
 bf16_tflops: 312
 default_power_w: 300       # 300W 
 sm_clock_max_mhz: 1410
