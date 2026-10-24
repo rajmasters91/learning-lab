@@ -1,0 +1,147 @@
+## GPU0 in node1 is capped at 200W (nvidia-smi) as a workaround for xid79 errors on this card. 
+other GPUs are at default - 300W
+
+```
+root@node1:~/learning-lab$ systemctl cat gpu0-thermal.service
+
+# /etc/systemd/system/gpu0-thermal.service
+[Unit]
+Description= GPU0 thermal mitigation (power cap + clock lock) - Xid 79 workaround
+#Documentation=
+After=nvidia-persistenced.service multi-user.target
+Wants=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# GPU0 (PCI 01:00) runs ~30C hotter than peers and throws Xid 79 under load.
+# Cap power + clocks to reduce peak heat. || true so a missing/healthy GPU0
+# never blocks boot. Remove this unit once GPU0 cooling is serviced.
+ExecStart=/bin/sh -c "/usr/bin/nvidia-smi -i 0 -pl 200 || true"
+ExecStart=/bin/sh -c "/usr/bin/nvidia-smi -i 0 -lgc 210,1200 || true"
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+
+## node1 has no NVLink (all NODE), single NUMA node, 
+- Choosing GPU2 for the lab since there are no power capping done for this unlike GPU0. 
+- nvidia-persistenced was changed to full persistence for all four cards. See notes for steps.
+
+```
+root@node1:~# nvidia-smi topo -m
+
+    	GPU0	GPU1	GPU2	GPU3	NIC0	CPU Affinity	NUMA Affinity	GPU NUMA ID
+GPU0	 X 	    NODE	NODE	NODE	NODE	        0-63               	0		N/A
+GPU1	NODE	 X 	    NODE	NODE	PHB	            0-63	            0		N/A
+GPU2	NODE	NODE	 X 	    NODE	NODE	        0-63	            0		N/A
+GPU3	NODE	NODE	NODE	 X 	    NODE	        0-63	            0		N/A
+NIC0	NODE	PHB	    NODE	NODE	 X
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+
+NIC Legend:
+
+  NIC0: mlx5_bond_0
+```
+
+
+Above output explains node1 is a server with 4 GPUs and one NIC. It relies entirely on standard PCIe lanes to communicate, without any high-speed NVLink bridges.
+
+Flowchart of how node1 is physically wired:
+
+[ CPU Socket ] (NUMA Node 0, Cores 0-63)
+   │
+   │   (The CPU's internal PCIe Root Complex)
+   │
+   ├─ [ PCIe Host Bridge A ] ─── GPU0
+   │
+   ├─ [ PCIe Host Bridge B ] ──┬─ GPU1  <-- GPU1 and NIC0 share 
+   │                           └─ NIC0      this specific PCIe bridge (PHB)
+   │
+   ├─ [ PCIe Host Bridge C ] ─── GPU2
+   │
+   └─ [ PCIe Host Bridge D ] ─── GPU3
+
+
+mlx5_bond_0 => mellanox
+
+
+NUMA Affinity 0:
+- All 4 GPUs and Mellanox NIC (mlx5_bond_0) report to NUMA Node 0 => all connected to same physical CPU socket. 
+- Hence, no latency penalty of data crossing the motherboard to reach a second CPU (if crossing motherboard, it shows up as "SYS" in the matrix).
+
+The NODE Connections: 
+- NODE => GPUs cannot talk to each other directly. Ex: If GPU0 wants to talk to GPU3, data from GPU0 must travel via PCIe to CPU's internal bus (acts as central traffic controller) and then travel again via a different PCIe to reach GPU3
+- standard PCIe speed => slowest way for GPUs to talk to each other on the same CPU.
+
+The PHB Connection: 
+- GPU1 + NIC0 intersection = PHB (PCIe Host Bridge). =>  GPU1 and NIC0 are physically plugged into slots that share the same PCIe root port on the CPU. => faster and more direct communication b/w GPU1 & NIC0.
+
+Workload Impact: 
+- No NVLink (NV1, NV2, etc., in the matrix) = slower; PCIe-bound =>  add PCIe overhead while training large AI models or run workloads that require constant data sharing b/w  GPUs. NVlink is faster in such cases.
+- PHB connection b/w GPU1 and NIC0 => Pin GPUDirect RDMA workloads to GPU1 for lowest latency & highest throughput when compared to other GPUs.
+- GPUDirect RDMA => allowing another server to push data directly into a GPU's memory over the network. Help data to bypass CPU's main memory  reach GPU1 directly via the shared PCIe bridge(PHB).
+
+
+
+## GPU 2 is Clock locked at 1410 MHz. 
+
+```
+root@node1:~#  nvidia-smi -i 2 -lgc 1410,1410
+GPU clocks set to "(gpuClkMin 1410, gpuClkMax 1410)" for GPU 00000000:81:00.0
+All done.
+root@node1:~# 
+```
+
+## SW Power Capping counter: 
+
+- grows 1:1 with wall-clock time on idle, unlocked GPUs  =>  for every second on your watch, the SW Power Capping counter increases by exactly one second (which shows up as 1,000,000 microseconds in below logs).
+- GPU0/GPU2  are clock locked => Counters frozen. see logs below.
+- Not evidence of past load. Use the live "SW Power Cap: Active" field during benchmarks instead.
+
+RUN 1:
+```
+root@node1:~# nvidia-smi -q | grep -A1 "Clocks Event Reasons Counters"
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 0 us                # GPU0 --> FROZEN
+--
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 93818527270 us      # GPU1
+--
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 92909810781 us      # GPU2 --> FROZEN
+--
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 93819724558 us      # GPU3
+```
+
+RUN2
+```
+root@node1:~# nvidia-smi -q | grep -A1 "Clocks Event Reasons Counters"
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 0 us                # GPU0  --> FROZEN
+--
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 94219124311 us      # GPU1
+--
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 92909810781 us      # GPU2 --> FROZEN
+--
+    Clocks Event Reasons Counters
+        SW Power Capping                               : 94220321857 us      # GPU3
+```
+
+
+- governor is schedutil on all 64 cores; set to performance for one test on 2026-10-18 and restored.
+

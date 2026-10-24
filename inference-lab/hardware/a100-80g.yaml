@@ -1,0 +1,23 @@
+card: NVIDIA A100 80GB PCIe
+architecture: Ampere
+memory_gb: 80              # VRAM
+memory_type: HBM2e         # GPU Memory class. ex: DDR = memory class used in servers
+memory_clock_mhz: 1512
+bus_width_bits: 5120
+bandwidth_tbs: 1.94        # 1512 MHz x 2 x 5120 bits / 8 = 1.94TB/s
+bf16_tflops: 312
+default_power_w: 300       # 300W 
+sm_clock_max_mhz: 1410
+sm_clock_lock_mhz:  1410
+lock_reason:  repeatability - so every run executes at the same clock and results are comparable week to week.
+mig_capable: true
+driver: 595.91.07
+cuda_max: 13.2
+decode_ceiling_tok_s: 120 # measured using Llama-3.1-8B-Instruct model. A100 card reads at  1.94 TB/s. 16 GB divided by 1940 GB/s = 0.0082 or 8.2 ms = time to generate one token => For 1 second (1/0.0082), ~120 tokens are produced.
+sm_count: 108
+cuda_cores: 6912
+compute_capability: 8.0
+l2_cache_mib: 40
+ecc: enabled
+cuda_visible_total_gib: 79.25
+sources: bus width, memory clock, SM count, L2: measured (deviceQuery); bandwidth: derived; TFLOPS: datasheet.
