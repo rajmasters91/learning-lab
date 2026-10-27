@@ -73,7 +73,7 @@ vllm/vllm-openai:v0.31.0-ubuntu2404 : pulls openai vLLM docker image with tag "v
   ```Model loading took 15.0 GiB memory and 5.420225 seconds```
   ```Loading weights took 0.87 seconds```
 - How much memory went to KV cache, and the number of tokens it can hold:  ```Available KV cache memory: 56.21 GiB``` and ```GPU KV cache size: 460,496 tokens```
-- The max_model_len it chose in tokens: ```max model len 131072```
+- The max_model_len it chose in tokens: ```max model len 131072```. Getting 16GiB (not 15.26 GiB i.e., model+weights) - (131072*128)/(1024x1024). Since this is max_model_len, is it approximate to next GiB ? yet to test 
 - The "maximum concurrency" line, if present: ```GPU KV cache size: 460,496 tokens, Maximum concurrency for 131,072 tokens per request: 3.51x``
 
 
